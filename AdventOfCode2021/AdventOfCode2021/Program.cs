@@ -8,6 +8,9 @@ namespace AdventOfCode
     {
         static void Main(string[] args)
         {
+            string input = "F:\\AdventOfCode2021\\AdventOfCode2021\\AdventOfCode2021\\Input.txt";
+
+            PowerConsumption(input);
             Console.WriteLine("Welcome to the Christmas submarine control panel");
             Console.WriteLine("What would you like to do?");
             while (true)
@@ -35,6 +38,12 @@ namespace AdventOfCode
                     Console.WriteLine("Give me depth file plz");
                     infile = Console.ReadLine();
                     CalcDepths(infile);
+                    return true;
+                    break;
+                case "PowerConsumption":
+                    Console.WriteLine("Give me power report file plz");
+                    infile = Console.ReadLine();
+                    PowerConsumption(infile);
                     return true;
                     break;
                 case "Exit":
@@ -103,7 +112,39 @@ namespace AdventOfCode
 
         public static void PowerConsumption(string input)
         {
-            
+            int countOnes = 0;
+            string[] binInput = File.ReadAllLines(input);
+            string charlength = new string('0', binInput[0].Length);
+            char[] gamma = charlength.ToCharArray();
+            char[] epsilon = charlength.ToCharArray();
+
+            for (int i = 0; i < binInput[0].Length; i++)
+            {
+                countOnes = 0;
+                for (int j = 0; j < binInput.Length; j++)
+                {
+                    if (binInput[j][i] == '1')
+                    {
+                        countOnes++;
+                    }
+                }
+                if(countOnes >= (binInput.Length / 2))
+                {
+                    gamma[i] = '1';
+                }
+                else
+                {
+                    epsilon[i] = '1';
+                }
+            }
+            string gammaVal = new string(gamma);
+            string epsVal = new string(epsilon);
+            Int32 gammaBin = Convert.ToInt32(gammaVal, 2);
+            Int32 epsBin = Convert.ToInt32(epsVal, 2);
+            Console.WriteLine("Gamma Binary String: " + gammaVal + " Gamma Integer Representation: " + gammaBin);
+            Console.WriteLine("Epsilon Binary String: " + epsVal + " Epsilon Integer Representation: " + epsBin);
+            Console.WriteLine("Total Power Consumption: " + (gammaBin * epsBin));
+
         }
     }
 }

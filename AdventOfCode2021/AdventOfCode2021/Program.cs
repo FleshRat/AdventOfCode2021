@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -8,22 +9,18 @@ namespace AdventOfCode
     {
         static void Main(string[] args)
         {
-            string input = "F:\\AdventOfCode2021\\AdventOfCode2021\\AdventOfCode2021\\Input.txt";
-
-            PowerConsumption(input);
-            Console.WriteLine("Welcome to the Christmas submarine control panel");
+            Console.WriteLine("Welcome to the Christmas Submarine Control Panel");
             Console.WriteLine("What would you like to do?");
             while (true)
             {
                 MainMenu();
             }
-
         }
         public static bool MainMenu()
         {
             string infile;
             Console.WriteLine("Available Commands:");
-            Console.WriteLine(" Move      DepthCheck     \n PowerConsumption  Exit");
+            Console.WriteLine(" Move      DepthCheck     \n PowerConsumption  LifeSupport   \n Exit");
             string input = Console.ReadLine();
             switch (input)
             {
@@ -33,26 +30,31 @@ namespace AdventOfCode
                     infile = Console.ReadLine();
                     Move(infile);
                     return true;
-                    break;
+                    
                 case "DepthCheck":
                     Console.WriteLine("Give me depth file plz");
                     infile = Console.ReadLine();
                     CalcDepths(infile);
                     return true;
-                    break;
+
                 case "PowerConsumption":
                     Console.WriteLine("Give me power report file plz");
                     infile = Console.ReadLine();
                     PowerConsumption(infile);
                     return true;
-                    break;
+                case "LifeSupport":
+                    Console.WriteLine("Give me report file plz");
+                    infile = Console.ReadLine();
+                    LifeSupport(infile);
+                    return true;
+
                 case "Exit":
                     return false;
-                    break;
+
                 default:
                     Console.WriteLine("IDK What that is...");
                     return true;
-                    break;
+                    
             }
         }
 
@@ -128,7 +130,7 @@ namespace AdventOfCode
                         countOnes++;
                     }
                 }
-                if(countOnes >= (binInput.Length / 2))
+                if(countOnes > (binInput.Length / 2))
                 {
                     gamma[i] = '1';
                 }
@@ -136,6 +138,7 @@ namespace AdventOfCode
                 {
                     epsilon[i] = '1';
                 }
+
             }
             string gammaVal = new string(gamma);
             string epsVal = new string(epsilon);
@@ -145,6 +148,69 @@ namespace AdventOfCode
             Console.WriteLine("Epsilon Binary String: " + epsVal + " Epsilon Integer Representation: " + epsBin);
             Console.WriteLine("Total Power Consumption: " + (gammaBin * epsBin));
 
+        }
+
+        public static void LifeSupport(string input)
+        {
+            int countOnes = 0;
+            string[] binInput = File.ReadAllLines(input);
+            string charlength = new string('0', binInput[0].Length);
+            char[] gamma = charlength.ToCharArray();
+            char[] epsilon = charlength.ToCharArray();
+            string[] O2 = binInput;
+            string[] CO2 = binInput;
+            while (O2.Length > 1 || CO2.Length > 1)
+            {
+                for (int i = 0; i < binInput[0].Length; i++)
+                {
+                    O2 = MostorLeastCommon(O2, i, true);
+                    CO2 = MostorLeastCommon(CO2, i, false);
+                }
+            }
+            Int32 oxygen = Convert.ToInt32(O2[0], 2);
+            Int32 carbondioxide = Convert.ToInt32(CO2[0], 2);
+            Console.WriteLine("Oxygen: " + oxygen);
+            Console.WriteLine("Carbon Dioxide: " + carbondioxide);
+            Console.WriteLine("Life Support Rating: " + (oxygen * carbondioxide));
+        }
+
+       public static string[] MostorLeastCommon(string[] inputs, int idx, bool mostCommon)
+        {
+            List<string> zeros = new List<string>();
+            List<string> ones = new List<string>();
+            if(inputs.Length == 1)
+            {
+                return inputs;
+            }
+            for(int i = 0; i < inputs.Length; i++)
+            {
+                if(inputs[i][idx] == '1')
+                {
+                    ones.Add(inputs[i]);
+                }
+                else
+                {
+                    zeros.Add(inputs[i]);
+                }
+            }
+            if (mostCommon)
+            {
+                if (zeros.Count > ones.Count)
+                {
+                    return zeros.ToArray();
+                }
+                else
+                    return ones.ToArray();
+            }
+            else
+            {
+                if (zeros.Count <= ones.Count)
+                {
+                    return zeros.ToArray();
+                }
+                else
+                    return ones.ToArray();
+            }
         }
     }
 }

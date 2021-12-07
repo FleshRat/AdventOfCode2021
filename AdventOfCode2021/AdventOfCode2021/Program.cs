@@ -240,7 +240,7 @@ namespace AdventOfCode
 
             for(int i = 0; i < balls.Length; i++)
             {
-                foreach(bingos[,] bingo in BingBong)
+                foreach(bingos[,] bingo in BingBong.ToList())
                 {
                     if (MarkSheet(bingo, Convert.ToDouble(balls[i])))
                         {
@@ -266,8 +266,7 @@ namespace AdventOfCode
                             }
                             Console.WriteLine("Sum of unmarked numbers: " + sumUnMarked);
                             Console.WriteLine(sumUnMarked.ToString() + " x " + balls[i].ToString() + " = " + sumUnMarked * Convert.ToDouble(balls[i]));
-                            i = balls.Length;
-                            break;
+                            BingBong.Remove(bingo);
                         }
                     }
                 }

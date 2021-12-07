@@ -7,14 +7,25 @@ namespace AdventOfCode
 {
     class Program
     {
+        public struct bingos
+        {
+            public bingos(double val)
+            {
+                Value = val;
+                Mark = false;
+            }
+            public double Value { get; set; }
+            public bool Mark { get; set; }
+        }
         static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to the Christmas Submarine Control Panel");
-            Console.WriteLine("What would you like to do?");
-            while (true)
-            {
-                MainMenu();
-            }
+            Bingo("F:\\AdventOfCode2021\\AdventOfCode2021\\AdventOfCode2021\\Input.txt");
+            //Console.WriteLine("Welcome to the Christmas Submarine Control Panel");
+            //Console.WriteLine("What would you like to do?");
+            //while (true)
+            //{
+            //    MainMenu();
+            //}
         }
         public static bool MainMenu()
         {
@@ -174,7 +185,7 @@ namespace AdventOfCode
             Console.WriteLine("Life Support Rating: " + (oxygen * carbondioxide));
         }
 
-       public static string[] MostorLeastCommon(string[] inputs, int idx, bool mostCommon)
+        public static string[] MostorLeastCommon(string[] inputs, int idx, bool mostCommon)
         {
             List<string> zeros = new List<string>();
             List<string> ones = new List<string>();
@@ -212,5 +223,108 @@ namespace AdventOfCode
                     return ones.ToArray();
             }
         }
+
+        public static void Bingo(string input)
+        {
+
+            List<bingos[,]> BingBong = new List<bingos[,]>();
+            string[] rawIn = File.ReadAllLines(input);
+            string[] balls = rawIn[0].Split(',');
+            for (int i = 1; i < rawIn.Length; i+=6)
+            {
+                if (rawIn[i] == string.Empty)
+                {
+                    BingBong.Add(MakeSheet(rawIn[(i + 1)..(i + 6)]));                    
+                } 
+            }
+
+            for(int i = 0; i < balls.Length; i++)
+            {
+                foreach(bingos[,] bingo in BingBong)
+                {
+                    if (MarkSheet(bingo, Convert.ToDouble(balls[i])))
+                        {
+                        if (CheckWin(bingo))
+                        {
+                            double sumUnMarked = 0;
+                            Console.WriteLine("Sheet " + (BingBong.IndexOf(bingo) + 1) + " Wins");
+                            for (int j = 0; j < 5; j++)
+                            {
+                                for (int k = 0; k < 5; k++)
+                                {
+                                    if (bingo[j, k].Mark)
+                                    {
+                                        Console.Write("[" + bingo[j, k].Value + "] ");
+                                    }
+                                    else
+                                    {
+                                        sumUnMarked += bingo[j, k].Value;
+                                        Console.Write(bingo[j, k].Value + " ");
+                                    }
+                                }
+                                Console.Write('\n');
+                            }
+                            Console.WriteLine("Sum of unmarked numbers: " + sumUnMarked);
+                            Console.WriteLine(sumUnMarked.ToString() + " x " + balls[i].ToString() + " = " + sumUnMarked * Convert.ToDouble(balls[i]));
+                            i = balls.Length;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool MarkSheet(bingos[,] bingo, double v)
+        {
+            bool markedSheet = false;
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                { 
+                    if(bingo[i,j].Value == v)
+                    {
+                        bingo[i, j].Mark = true;
+                        markedSheet = true;
+                    }
+                }
+            }
+            return markedSheet;
+        }
+
+        public static bingos[,] MakeSheet(string[] rawBoard)
+        {
+            bingos[,] Sheet = new bingos[5,5];
+            for(int i = 0; i < rawBoard.Length; i++)
+            {
+                string[] ROW = rawBoard[i].Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                for(int j = 0; j < ROW.Length; j++)
+                {
+                    Sheet[i, j] = new bingos(Convert.ToDouble(ROW[j]));
+                }
+            }
+            return Sheet;
+        }
+
+        public static bool CheckWin(bingos[,] sheet)
+        {
+            //check rows
+            for (int i = 0; i < 5; i++)
+            {
+                if (sheet[i, 0].Mark && sheet[i, 1].Mark && sheet[i, 2].Mark && sheet[i, 3].Mark && sheet[i, 4].Mark)
+                {
+                    return true;
+                }
+            }
+            //check columns
+            for (int i = 0; i < 5; i++)
+            {
+                if (sheet[0,i].Mark && sheet[1, i].Mark && sheet[2, i].Mark && sheet[3, i].Mark && sheet[4, i].Mark)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
 }
